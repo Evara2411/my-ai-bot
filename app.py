@@ -9,6 +9,7 @@ st.write("You can chat as much as you want. This page will never slow down!")
 # API Key Setup
 if "GEMINI_API_KEY" in st.secrets:
     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+    
 else:
     st.error("Please add your Gemini API Key in Streamlit Settings.")
     st.stop()
