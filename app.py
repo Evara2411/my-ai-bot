@@ -11,7 +11,7 @@ st.write("You can chat as much as you want. This page will never slow down!")
 if "GEMINI_API_KEY" in st.secrets:
     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-1.0-pro")
 
 # Initialize Chat History
 if "chat_history" not in st.session_state:
