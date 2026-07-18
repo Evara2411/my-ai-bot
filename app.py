@@ -1,17 +1,10 @@
 import streamlit as st
-import google.generativeai as genai
+import requests
 
-# Page Configuration
-st.set_page_config(page_title="My Custom AI Chatbot", page_icon="🤖")
-
-st.title("🤖 My Custom AI Chatbot")
-st.write("You can chat as much as you want. This page will never slow down!")
-
-# Configure Gemini API Key
-if "GEMINI_API_KEY" in st.secrets:
-    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-
-model = genai.GenerativeModel("gemini-2.0-flash")
+# App Title & Personalization
+st.set_page_config(page_title="My Personal AI", page_icon="✨")
+st.title("✨ My Personal AI Chatbot")
+st.write("Welcome to your custom AI space! Ekdum free aur fast.")
 
 # Initialize Chat History
 if "chat_history" not in st.session_state:
@@ -23,28 +16,35 @@ for message in st.session_state.chat_history:
         st.markdown(message["content"])
 
 # Chat Input
-if user_question := st.chat_input("Ask me anything... (English ya Hindi me puchein)"):
-    # Display user question
+if user_question := st.chat_input("Apne dost se kuch bhi puchein..."):
     with st.chat_message("user"):
         st.markdown(user_question)
     
-    # Save to history
     st.session_state.chat_history.append({"role": "user", "content": user_question})
     
     try:
-        # Generate full context for Gemini
-        full_context = "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state.chat_history])
+        # Using a reliable free inference model (No personal key needed)
+        API_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta"
         
-        # Get AI Response
-        response = model.generate_content(full_context)
-        ai_response = response.text
+        # System instructions to make it personalized
+        system_instruction = "Tum user ke ek personal aur bohot pakke dost ho. Humesha friendly rehna aur Hinglish me baat karna."
+        
+        payload = {
+            "inputs": f"<|system|>\n{system_instruction}</s>\n<|user|>\n{user_question}</s>\n<|assistant|>\n",
+            "parameters": {"max_new_tokens": 400, "temperature": 0.7}
+        }
+        
+        # Getting response from server
+        response = requests.post(API_URL, json=payload).json()
+        generated_text = response[0]['generated_text']
+        ai_response = generated_text.split("<|assistant|>\n")[-1].strip()
         
         # Display AI Response
         with st.chat_message("assistant"):
             st.markdown(ai_response)
             
-        # Save AI Response to history
         st.session_state.chat_history.append({"role": "assistant", "content": ai_response})
         
     except Exception as e:
-        st.error(f"An error occurred: {e}")
+        st.error("Dost abhi thoda busy hai, ek baar phir se message type kijiye!")
+        
