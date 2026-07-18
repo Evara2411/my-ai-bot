@@ -34,7 +34,7 @@ if user_question := st.chat_input("Ask me anything... (English ya Hindi me puche
 
     # Get response from AI
     try:
-     model = genai.GenerativeModel("models/gemini-1.5-flash")
+     model = genai.GenerativeModel("gemini-1.5-flash")
         
         # Combine history for context
         full_context = "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state.chat_history])
